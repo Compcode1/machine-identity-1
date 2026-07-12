@@ -150,6 +150,15 @@ The Handshake: The runner delivers this signed assertion string to the Microsoft
 Policy Validation: Entra ID validates the signature against the trust root established in Phase 3 and verifies the binary string matching parameters.
 Credential Exchange: Entra ID returns a cryptographically signed cloud token to the runner.
 
+**Step 4.2 Plain-Talk Summary**
+**In this final step, we proved that our zero-trust access model works in reality by executing a live automation workflow file within the GitHub Actions runner platform.** 
+
+**By using federated credentials rather than long-lived, dangerous passwords or client secrets, the external GitHub runner successfully requested an ephemeral, cryptographically signed token string from its own host identity provider and delivered it to the Microsoft Entra ID OAuth 2.0 token endpoint.** 
+
+**Entra ID validated the incoming signature against our established trust root, verified that the binary string parameters precisely matched our target principal's configuration, and handed back a signed cloud access token.** 
+
+**Because we had accurately bound that exact service principal to the Key Vault Secrets User data-plane role in the previous step, the runner was fully authorized to communicate directly with key-vault-sgt and securely print the value success from the data plane, successfully validating the complete, passwordless cross-cloud architecture.**
+
 Step 4.3: Enforce Token State & Telemetry Lifecycles
 Access Token (AT) State: Exchanged credentials function in a highly volatile state, defaulting to an absolute expiration window of 60 minutes.
 Refresh Token (RT) State: Workload identity federation explicitly does not issue a Refresh Token (RT). Long-running compilation or automation routines extending past the 60-minute mark cannot silently refresh; they must completely loop back to re-authenticate from the origin.
