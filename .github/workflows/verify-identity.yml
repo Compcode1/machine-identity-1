@@ -21,6 +21,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Data Plane Asset Access Trigger
+      - name: Secure Data Plane Consumer
         run: |
-          az keyvault secret show --vault-name "key-vault-sgt" --name "test-secret" --query value -o tsv
+          # 1. Fetch the raw payload silently from the Azure data plane into an internal memory variable
+          RAW_PAYLOAD=$(az keyvault secret show --vault-name "key-vault-sgt" --name "test-secret" --query value -o tsv)
+          
+          # 2. Register the dynamic payload string with GitHub's log redaction filter engine
+          echo "::add-mask::$RAW_PAYLOAD"
+          
+          # 3. Suppress raw standard output leaks and output a secure confirmation indicator instead
+          echo "Token validation complete. Target payload has been consumed and masked securely."
